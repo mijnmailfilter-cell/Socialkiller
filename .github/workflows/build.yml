@@ -1,0 +1,59 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: ''
+
+      - name: Install SDK packages
+        run: yes | sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.7'
+
+      - name: Build debug APK
+        run: gradle assembleDebug --no-daemon --stacktrace
+
+      - name: Prepare APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk SocialKiller.apk
+
+      - name: Publish to 'latest' release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create latest \
+            --title "Social Killer (laatste build)" \
+            --notes "Automatisch gebouwde APK. Download SocialKiller.apk hieronder en installeer rechtstreeks op je telefoon." \
+            --target "$GITHUB_SHA" 2>/dev/null || true
+          for i in 1 2 3 4 5 6; do
+            if gh release upload latest SocialKiller.apk --clobber; then
+              echo "Upload gelukt."
+              exit 0
+            fi
+            echo "Poging $i mislukt (mogelijk GitHub-storing), opnieuw over 30s..."
+            sleep 30
+          done
+          echo "Upload bleef falen."
+          exit 1

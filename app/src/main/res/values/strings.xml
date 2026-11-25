@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Social Killer</string>
+    <string name="service_label">Social Killer</string>
+    <string name="service_description">Social Killer kijkt alleen welke app er op de voorgrond staat, zodat hij kan bijhouden hoe lang je op social media zit en je af en toe een pop-up kan sturen. Er wordt niets gelezen van wat je in apps ziet of typt, en er gaat niets het internet op.</string>
+</resources>
