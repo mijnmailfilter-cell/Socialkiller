@@ -47,11 +47,11 @@ object Messages {
     )
 
     private val stay1 = listOf("Ja ja, ik weet het", "Nog even dan", "Laat me", "Bemoei je er niet mee")
-    private val leave1 = listOf("Oké, ik stop", "Je hebt gelijk", "Breng me weg")
+    const val LEAVE_SUB = "sluit de social media app"
+    private const val LEAVE_DEFAULT = "Zo lang al?"
     private val stay2 = listOf("Nog héél even", "Ik heb het onder controle", "Dit is research")
     private val leave2 = listOf("Oké, ik stop ermee", "Haal me hier weg", "Fair enough")
     private val stay3 = listOf("Ik weet wat ik doe", "Ik ben volwassen", "Nog 1 filmpje (echt)")
-    private val leave3 = listOf("Breng me weg hier", "Oké oké, ik stop", "Red me")
 
     fun levelFor(activeMs: Long): Int {
         val min = activeMs / 60000
@@ -89,9 +89,9 @@ object Messages {
             else -> "${duration(activeMs)} $app"
         }
         val (stay, leave) = when (level) {
-            3 -> stay3.random() to leave3.random()
+            3 -> stay3.random() to LEAVE_DEFAULT
             2 -> stay2.random() to leave2.random()
-            else -> stay1.random() to leave1.random()
+            else -> stay1.random() to LEAVE_DEFAULT
         }
         return Popup(level, title, fill(pool.random()), stay, leave)
     }

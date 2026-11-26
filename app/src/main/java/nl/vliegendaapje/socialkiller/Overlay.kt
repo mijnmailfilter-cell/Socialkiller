@@ -9,6 +9,11 @@ import android.os.CountDownTimer
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.AbsoluteSizeSpan
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
@@ -92,7 +97,20 @@ class Overlay(private val ctx: Context, private val onLeave: () -> Unit) {
             minHeight = dp(52)
         }
 
-        val leaveBtn = pill(p.leave, true)
+        val leaveBtn = pill(p.leave, true).apply {
+            // twee regels: grote tekst + klein "sluit de social media app" eronder
+            val sb = SpannableStringBuilder(p.leave)
+            sb.append("\n")
+            val start = sb.length
+            sb.append(Messages.LEAVE_SUB)
+            sb.setSpan(AbsoluteSizeSpan(12, true), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            sb.setSpan(StyleSpan(Typeface.NORMAL), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            sb.setSpan(ForegroundColorSpan(0xD9FFFFFF.toInt()), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            text = sb
+            setLineSpacing(0f, 1.05f)
+            setPadding(dp(16), dp(10), dp(16), dp(10))
+            minHeight = dp(60)
+        }
         val stayBtn = pill(p.stay, false)
         leaveBtn.setOnClickListener { dismiss(); onLeave() }
         stayBtn.setOnClickListener { dismiss() }
